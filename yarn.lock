@@ -5675,6 +5675,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ffprobe-static@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "ffprobe-static@npm:3.1.0"
+  checksum: c859391b886150c1a381b237a04be82286af2fdac52f959685c1814ec06c1fee3de62db457e9d01954f50f4b74a01b01feac9730119d431f22f4fcbcc66a15ac
+  languageName: node
+  linkType: hard
+
 "file-entry-cache@npm:^6.0.1":
   version: 6.0.1
   resolution: "file-entry-cache@npm:6.0.1"
@@ -11980,6 +11987,7 @@ __metadata:
     fastify-plugin: ^4.5.0
     fflate: ^0.7.4
     ffmpeg-static: ^5.1.0
+    ffprobe-static: ^3.1.0
     find-my-way: ^7.6.0
     katex: ^0.16.4
     mantine-datatable: ^2.2.6

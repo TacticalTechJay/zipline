@@ -70,6 +70,7 @@ model Thumbnail {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   name      String
+  gif       String?
 
   fileId Int  @unique
   file   File @relation(fields: [fileId], references: [id], onDelete: Cascade)

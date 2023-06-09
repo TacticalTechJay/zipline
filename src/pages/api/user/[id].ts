@@ -6,25 +6,27 @@ import { jsonUserReplacer } from 'lib/utils/client';
 import { formatRootUrl } from 'lib/utils/urls';
 import zconfig from 'lib/config';
 import { NextApiReq, NextApiRes, UserExtended, withZipline } from 'middleware/withZipline';
+import { User, File, Thumbnail } from '@prisma/client';
 
 const logger = Logger.get('user');
 
 async function handler(req: NextApiReq, res: NextApiRes, user: UserExtended) {
   const { id } = req.query as { id: string };
 
-  const target = await prisma.user.findFirst({
-    where: {
-      id: Number(id),
-    },
-    include: {
-      files: {
-        include: {
-          thumbnail: true,
-        },
+  const target: User & { files: (File & { gif?: string; thumbnail: Thumbnail })[] } =
+    await prisma.user.findFirst({
+      where: {
+        id: Number(id),
       },
-      Folder: true,
-    },
-  });
+      include: {
+        files: {
+          include: {
+            thumbnail: true,
+          },
+        },
+        Folder: true,
+      },
+    });
 
   if (!target) return res.notFound('user not found');
 
@@ -197,6 +199,8 @@ async function handler(req: NextApiReq, res: NextApiRes, user: UserExtended) {
     for (const file of target.files) {
       (file as unknown as { url: string }).url = formatRootUrl(zconfig.uploader.route, file.name);
       if (file.thumbnail) {
+        if (file.thumbnail.gif) (file.gif as unknown as string) = formatRootUrl('/r', file.thumbnail.gif);
+
         (file.thumbnail as unknown as string) = formatRootUrl('/r', file.thumbnail.name);
       }
     }

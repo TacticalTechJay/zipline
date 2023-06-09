@@ -22,6 +22,7 @@ async function handler(req: NextApiReq, res: NextApiRes, user: UserExtended) {
       for (let i = 0; i !== files.length; ++i) {
         await datasource.delete(files[i].name);
         if (files[i].thumbnail?.name) await datasource.delete(files[i].thumbnail.name);
+        if (files[i].thumbnail?.gif) await datasource.delete(files[i].thumbnail.gif);
       }
 
       const { count } = await prisma.file.deleteMany({
@@ -74,6 +75,7 @@ async function handler(req: NextApiReq, res: NextApiRes, user: UserExtended) {
 
       await datasource.delete(file.name);
       if (file.thumbnail?.name) await datasource.delete(file.thumbnail.name);
+      if (file.thumbnail?.gif) await datasource.delete(file.thumbnail.gif);
 
       logger.info(
         `User ${user.username} (${user.id}) deleted an image ${file.name} (${file.id}) owned by ${file.user.username} (${file.user.id})`
@@ -131,6 +133,7 @@ async function handler(req: NextApiReq, res: NextApiRes, user: UserExtended) {
       return res.json({ count });
     }
     let files: {
+      gif?: string;
       favorite: boolean;
       createdAt: Date;
       id: number;
@@ -141,7 +144,7 @@ async function handler(req: NextApiReq, res: NextApiRes, user: UserExtended) {
       views: number;
       size: number;
       originalName: string;
-      thumbnail?: { name: string };
+      thumbnail?: { name: string; gif: string };
     }[] = await prisma.file.findMany({
       where: {
         userId: user.id,
@@ -170,6 +173,8 @@ async function handler(req: NextApiReq, res: NextApiRes, user: UserExtended) {
       (files[i] as unknown as { url: string }).url = formatRootUrl(config.uploader.route, files[i].name);
 
       if (files[i].thumbnail) {
+        if (files[i].thumbnail.gif)
+          (files[i].gif as unknown as string) = formatRootUrl('/r', files[i].thumbnail.gif);
         (files[i].thumbnail as unknown as string) = formatRootUrl('/r', files[i].thumbnail.name);
       }
     }
